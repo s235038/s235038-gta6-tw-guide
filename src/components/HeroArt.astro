@@ -1,0 +1,71 @@
+<svg class="hero-art" width="750" height="480" viewBox="0 0 750 480" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="sky-glow" cx=".68" cy=".48" r=".68">
+      <stop stop-color="#ce456e" stop-opacity=".78"/>
+      <stop offset=".45" stop-color="#5c2359" stop-opacity=".83"/>
+      <stop offset="1" stop-color="#121024" stop-opacity=".16"/>
+    </radialGradient>
+    <linearGradient id="sun-glow" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#ffd299"/>
+      <stop offset=".46" stop-color="#ff956e"/>
+      <stop offset="1" stop-color="#ee5677"/>
+    </linearGradient>
+    <linearGradient id="sea-glow" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#662450"/>
+      <stop offset=".6" stop-color="#231535"/>
+      <stop offset="1" stop-color="#111121"/>
+    </linearGradient>
+    <linearGradient id="building-color" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#231631"/>
+      <stop offset="1" stop-color="#11101f"/>
+    </linearGradient>
+    <pattern id="micro-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0v24" stroke="#f8acdb" stroke-opacity=".095"/>
+    </pattern>
+    <pattern id="window-grid" width="7" height="12" patternUnits="userSpaceOnUse">
+      <path d="M1 2h2m2 5h1" stroke="#ff98bf" stroke-opacity=".35" stroke-width="1"/>
+    </pattern>
+    <clipPath id="sun-clip"><circle cx="511" cy="204" r="134"/></clipPath>
+    <path id="skyline" d="M80 303v-37h21v-19h12v-12h23v12h10v56h12v-24h15v-36h24v-18h17v18h12v60h12v-45h23v-60h7v-20h35v20h9v80h12v-30h19v35h9v-53h7v-21h30v21h7v53h17v-27h19v-54h11v-18h21v18h12v81h15v-51h12v-31h24v31h10v51h15v-94h10v-20h8v-25h24v25h13v20h8v94h17v-40h18v-54h12v-11h30v11h8v94h14v-21h25v-41h15v-16h26v16h10v62H80Z"/>
+  </defs>
+  <path fill="url(#sky-glow)" d="M0 0h750v479H0z"/>
+  <path fill="url(#micro-grid)" d="M0 0h750v480H0z"/>
+  <g stroke="#f5a3d7" opacity=".33">
+    <circle cx="511" cy="204" r="153" stroke-dasharray="2 8"/>
+    <circle cx="511" cy="204" r="176"/>
+    <path d="M511 16v19m-9-9h18M325 204h18m-9-9v18m348-9h18m-9-9v18M98 77h67m-67 0V55m610 8h-37m37 0v26M708 391h-37m37 0v-27"/>
+  </g>
+  <g fill="#ffc8df">
+    <circle cx="360" cy="85" r="2" opacity=".7"/>
+    <circle cx="291" cy="107" r="1" opacity=".58"/>
+    <circle cx="633" cy="53" r="2" opacity=".78"/>
+    <circle cx="680" cy="143" r="1.5" opacity=".7"/>
+    <circle cx="590" cy="22" r="1" opacity=".72"/>
+    <circle cx="249" cy="140" r="1.4" opacity=".72"/>
+    <circle cx="670" cy="83" r="1" opacity=".6"/>
+    <circle cx="730" cy="122" r="1" opacity=".75"/>
+  </g>
+  <circle cx="511" cy="204" r="134" fill="url(#sun-glow)"/>
+  <g clip-path="url(#sun-clip)" stroke="#852a62" stroke-opacity=".58">
+    <path d="M370 200h289m-289 12h289" stroke-width="1"/>
+    <path d="M370 226h289m-289 13h289" stroke-width="2"/>
+    <path d="M370 254h289m-289 14h289" stroke-width="3"/>
+    <path d="M370 283h289m-289 15h289" stroke-width="5"/>
+  </g>
+  <path d="M43 301h707v179H0V305z" fill="url(#sea-glow)"/>
+  <g stroke="#e882b3" stroke-opacity=".38">
+    <path d="M0 304h750M0 310h750M0 321h750M0 335h750M0 355h750M0 382h750M0 423h750M0 479h750"/>
+    <path d="M499 301 0 469m504-168L86 480m421-179L233 480m276-179L365 480m146-179v179m3-179 147 179m-145-179 234 159m-231-159 231 112m-230-112 230 81"/>
+  </g>
+  <use href="#skyline" fill="url(#building-color)" stroke="#e98cbb" stroke-opacity=".56"/>
+  <use href="#skyline" fill="url(#window-grid)"/>
+  <g fill="#ffafc9" opacity=".82">
+    <circle cx="283" cy="178" r="2"/>
+    <circle cx="604" cy="167" r="2"/>
+    <circle cx="681" cy="198" r="2"/>
+  </g>
+  <g stroke="#ff9c9e" stroke-opacity=".68" stroke-width="1.2">
+    <path d="M454 320h57m-32 14h78m-121 20h45m17 0h91m-155 26h138m-75 40h115"/>
+    <path d="M532 309h34m21 25h24m-20 46h44"/>
+  </g>
+</svg>

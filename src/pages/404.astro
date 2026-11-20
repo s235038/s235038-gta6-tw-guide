@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { paths } from '../lib/content';
+---
+<Base title="找不到頁面" description="這個網址找不到對應的攻略。請回到 G6 台灣攻略資料庫搜尋或從主題開始探索。" noindex>
+  <div class="shell error-page">
+    <section class="error-panel" aria-labelledby="error-title">
+      <span class="error-code">404</span>
+      <h1 id="error-title">找不到這個頁面</h1>
+      <p>網址可能有誤，或原本的內容已經移動。你可以回首頁，或從攻略庫搜尋文章。</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href={paths.guides}><Icon name="search" size={19} /> 搜尋攻略</a>
+        <a class="button button-secondary" href={paths.home}>回首頁</a>
+      </div>
+    </section>
+  </div>
+</Base>

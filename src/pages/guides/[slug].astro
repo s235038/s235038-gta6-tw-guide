@@ -1,0 +1,245 @@
+---
+import { render, type CollectionEntry } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+import Icon from '../../components/Icon.astro'
+import { categories, dateLabel, listGuides, paths, statusLabels } from '../../lib/content'
+
+export async function getStaticPaths() {
+  const guides = await listGuides()
+  const byId = new Map(guides.map(guide => [guide.id, guide]))
+  return guides.map(guide => {
+    const related = [...new Set(guide.data.related)].map(id => {
+      const entry = byId.get(id)
+      if (!entry || id === guide.id) throw new Error(`${guide.id}: 無效的延伸閱讀 ${id}`)
+      return entry
+    })
+    const categoryGuides = guides.filter(entry => entry.data.category === guide.data.category &&
+      (!entry.data.spoiler || guide.data.spoiler))
+    const index = categoryGuides.findIndex(entry => entry.id === guide.id)
+    return {
+      params: { slug: guide.id },
+      props: { guide, related, previous: categoryGuides[index - 1], next: categoryGuides[index + 1] },
+    }
+  })
+}
+
+interface Props {
+  guide: CollectionEntry<'guides'>
+  related: CollectionEntry<'guides'>[]
+  previous?: CollectionEntry<'guides'>
+  next?: CollectionEntry<'guides'>
+}
+
+const { guide, related, previous, next } = Astro.props
+const { Content, headings } = await render(guide)
+const { id, data } = guide
+const category = categories.find(item => item.id === data.category)!
+const canonical = new URL(paths.article(id), Astro.site).href
+const categoryLink = `${paths.home}?category=${category.id}#guides`
+const siteTitle = 'G6 台灣攻略資料庫'
+const articleData = {
+  '@type': 'Article',
+  headline: data.title,
+  description: data.description,
+  image: new URL(paths.asset('og/g6-share.png'), Astro.site).href,
+  datePublished: data.published,
+  dateModified: data.updated,
+  inLanguage: 'zh-Hant-TW',
+  mainEntityOfPage: canonical,
+  articleSection: category.label,
+  author: { '@type': 'Organization', name: siteTitle, url: new URL(paths.home, Astro.site).href },
+  citation: data.sources.map(source => source.url),
+}
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    articleData,
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '首頁', item: new URL(paths.home, Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: category.label, item: new URL(categoryLink, Astro.site).href },
+        { '@type': 'ListItem', position: 3, name: data.title, item: canonical },
+      ],
+    },
+  ],
+}
+---
+<Base title={data.title} description={data.description} type="article" structuredData={structuredData}>
+  <meta slot="head" property="article:published_time" content={data.published} />
+  <meta slot="head" property="article:modified_time" content={data.updated} />
+
+  <div class="shell article-shell">
+    <nav aria-label="麵包屑" class="breadcrumbs">
+      <a href={paths.home}>首頁</a><span aria-hidden="true">/</span>
+      <a href={categoryLink}>{category.label}</a><span aria-hidden="true">/</span>
+      <span aria-current="page">攻略</span>
+    </nav>
+    <article data-reading={id}>
+      <header class="article-intro">
+        <div class="article-badges">
+          <span class="badge" data-status={data.status}>{statusLabels[data.status]}</span>
+          <span class="badge badge-muted">{data.level}</span>
+          {data.spoiler && <span class="badge" data-status="unconfirmed">含劇透</span>}
+        </div>
+        <h1>{data.title}</h1>
+        <p class="article-lead">{data.description}</p>
+        <div class="article-dates">
+          <span>發布 <time datetime={data.published}>{dateLabel(data.published)}</time></span>
+          <span>更新 <time datetime={data.updated}>{dateLabel(data.updated)}</time></span>
+        </div>
+        <div class="article-actions">
+          <button class="button button-secondary" type="button" aria-pressed="false" data-save={id}>
+            <Icon name="bookmark" size={17} /> 收藏攻略
+          </button>
+          <button class="button button-secondary" type="button" aria-pressed="false" data-progress={id}>
+            標記為已讀
+          </button>
+          <button class="button button-secondary" type="button" data-copy>複製文章連結</button>
+        </div>
+        <input class="copy-fallback" aria-label="文章連結" type="url" value={canonical} readonly hidden data-copy-fallback />
+        <p class="plain-status" data-copy-status role="status"></p>
+      </header>
+      {data.spoiler && (
+        <section class="spoiler-notice" data-spoiler-gate aria-labelledby="spoiler-title">
+          <h2 id="spoiler-title"><Icon name="shield" size={19} /> 劇透提示</h2>
+          <p>這篇含有遊玩流程或劇情細節。防劇透開啟時會隱藏這些內容。</p>
+          <button class="button button-primary" type="button" data-spoiler-reveal>顯示這篇攻略</button>
+          <noscript><p>啟用 JavaScript 後可顯示這篇攻略。</p></noscript>
+        </section>
+      )}
+      <div class="article-content" data-spoiler-body={data.spoiler || undefined} hidden={data.spoiler} tabindex={data.spoiler ? -1 : undefined}>
+        {headings.some(heading => heading.depth === 2) && (
+          <nav class="article-toc" aria-label="文章目錄">
+            <h2>本篇目錄</h2>
+            <ul>
+              {headings.filter(heading => heading.depth === 2).map(heading =>
+                <li><a href={`#${heading.slug}`}>{heading.text}</a></li>
+              )}
+            </ul>
+          </nav>
+        )}
+        <div class="reading-position" data-reading-position hidden>
+          <label>
+            <span>本篇閱讀進度</span>
+            <progress value="0" max="100" data-reading-meter></progress>
+          </label>
+          <span data-reading-value aria-hidden="true">0%</span>
+          <button class="button button-secondary" type="button" data-reading-resume hidden>回到上次閱讀位置</button>
+        </div>
+        <div class="prose" data-reading-content><Content /></div>
+        <section class="source-section" id="sources">
+          <h2>查證來源</h2>
+          <ul class="source-list">
+            {data.sources.map(source => (
+              <li>
+                <span class="badge" data-status={source.type}>{statusLabels[source.type]}</span>
+                <a href={source.url}>{source.title}</a>
+                <small>
+                  <span>可信度 {source.confidence}</span>
+                  <span>發布 {source.published ? <time datetime={source.published}>{dateLabel(source.published)}</time> : '未標示'}</span>
+                  <span>查核 <time datetime={source.checked}>{dateLabel(source.checked)}</time></span>
+                </small>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+      {related.length > 0 && (
+        <section class="related-section">
+          <h2>延伸閱讀</h2>
+          <ul>
+            {related.map(entry => (
+              <li data-related-spoiler={entry.data.spoiler || undefined} hidden={entry.data.spoiler}>
+                <a href={paths.article(entry.id)}>{entry.data.title}</a>
+                <span class="badge" data-status={entry.data.status}>{statusLabels[entry.data.status]}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {(previous || next) && (
+        <nav class="article-neighbors" aria-label="同分類文章">
+          {previous && <a rel="prev" href={paths.article(previous.id)} data-related-spoiler={previous.data.spoiler || undefined} hidden={previous.data.spoiler}>
+            <span>上一篇</span>{previous.data.title}
+          </a>}
+          {next && <a rel="next" href={paths.article(next.id)} data-related-spoiler={next.data.spoiler || undefined} hidden={next.data.spoiler}>
+            <span>下一篇</span>{next.data.title}
+          </a>}
+        </nav>
+      )}
+      <ul class="article-tags" aria-label="文章標籤">
+        {data.tags.map(tag => <li><a class="badge badge-muted" href={`${paths.home}?tag=${encodeURIComponent(tag)}#guides`}>{tag}</a></li>)}
+      </ul>
+    </article>
+  </div>
+</Base>
+
+<script>
+  import '../../scripts/read-position'
+</script>
+
+<style>
+  .article-shell { max-width: 860px; padding-block: clamp(1.5rem, 5vw, 4rem) 4.5rem; }
+  .breadcrumbs, .article-badges, .article-actions, .article-dates, .article-tags {
+    display: flex; flex-wrap: wrap; align-items: center; gap: .55rem .8rem;
+  }
+  .breadcrumbs, .article-dates { font-size: .9rem; color: #aeb0c8; }
+  .breadcrumbs a, .article-content a, .related-section a { color: #f3b1ba; text-underline-offset: .2em; }
+  .breadcrumbs a:hover, .article-content a:hover, .related-section a:hover { color: #ffdee4; text-decoration: underline; }
+  .article-intro { padding-block: 1.7rem 1.45rem; border-bottom: 1px solid #353348; }
+  h1 { margin: .85rem 0 .75rem; font-size: clamp(1.9rem, 5vw, 3.4rem); line-height: 1.22; letter-spacing: -.035em; text-wrap: balance; }
+  .article-lead { font-size: clamp(1rem, 2vw, 1.2rem); color: #c9c9dc; line-height: 1.75; }
+  .article-actions { margin-top: 1.25rem; }
+  .article-actions .button { min-height: 44px; }
+  .article-actions [aria-pressed="true"] { color: #ffd8df; background: #472836; border-color: #c96f83; }
+  .copy-fallback {
+    width: 100%; padding: .7rem .9rem; margin-top: .7rem; border: 1px solid #817f9e;
+    border-radius: .5rem; background: #161523; color: inherit; font: inherit;
+  }
+  [data-copy-status]:empty { margin: 0; }
+  .article-content { margin-top: 1.6rem; }
+  .reading-position {
+    display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; margin-top: 1.25rem;
+    padding: .7rem .8rem; border: 1px solid #39344e; border-radius: .65rem; color: #d0cce2; font-size: .875rem;
+  }
+  .reading-position label { display: flex; gap: .6rem; flex: 1 1 10.5rem; align-items: center; }
+  .reading-position progress { flex: 1 1 4rem; min-width: 0; height: .72rem; accent-color: #ff8f9d; }
+  .reading-position .button { min-height: 44px; }
+  .article-toc, .spoiler-notice {
+    padding: clamp(1rem, 4vw, 1.55rem); background: #1a182a; border: 1px solid #39344e; border-radius: 1rem;
+  }
+  .article-toc h2, .spoiler-notice h2 { margin: 0 0 .45rem; font-size: 1.16rem; }
+  .article-toc ul { margin: 0; padding-inline-start: 1.35rem; line-height: 1.85; }
+  .article-toc a { display: inline-block; padding-block: .28rem; }
+  .spoiler-notice { margin-top: 1.4rem; }
+  .spoiler-notice h2 { display: flex; align-items: center; gap: .45rem; }
+  .spoiler-notice p { color: #d0cce2; line-height: 1.65; }
+  .prose { color: #deddeb; line-height: 1.87; overflow-wrap: anywhere; }
+  .prose :global(h2), .source-section h2, .related-section h2 {
+    margin: 1.9rem 0 .65rem; color: #fbf7ff; font-size: clamp(1.28rem, 3.6vw, 1.65rem); line-height: 1.4;
+  }
+  .prose :global(h3) { margin: 1.4rem 0 .55rem; color: #f5edfc; font-size: 1.18rem; }
+  .prose :global(p), .prose :global(ul), .prose :global(ol) { margin: 0 0 .95rem; }
+  .prose :global(ul), .prose :global(ol) { padding-inline-start: 1.5rem; }
+  .prose :global(li + li) { margin-top: .35rem; }
+  .prose :global(blockquote) { border-inline-start: 3px solid #f38aa0; padding: .45rem 1rem; margin: 1.15rem 0; background: #211927; }
+  .prose :global(blockquote p:last-child) { margin: 0; }
+  .prose :global(a) { text-decoration: underline; }
+  .prose :global(table) { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: .94rem; }
+  .prose :global(td), .prose :global(th) { border: 1px solid #49435d; padding: .55rem; text-align: start; vertical-align: top; }
+  .prose :global(th) { color: #fff3ff; background: #252139; }
+  .source-section, .related-section { margin-top: 2rem; padding-top: .1rem; border-top: 1px solid #353348; }
+  .source-list, .related-section ul, .article-tags { list-style: none; padding: 0; }
+  .source-list li, .related-section li {
+    padding: .8rem 0; border-bottom: 1px solid #353348; display: flex; align-items: baseline; flex-wrap: wrap; gap: .35rem .65rem; overflow-wrap: anywhere;
+  }
+  .source-list small { width: 100%; display: flex; flex-wrap: wrap; column-gap: 1rem; color: #b9b3cc; font-size: .85rem; }
+  .article-tags { margin-top: 1.6rem; }
+  .article-neighbors { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.6rem; }
+  .article-neighbors a {
+    flex: 1 1 15rem; padding: .8rem .9rem; border: 1px solid #39344e; border-radius: .65rem;
+    color: #f3b1ba; text-decoration-thickness: from-font; text-underline-offset: .2em;
+  }
+  .article-neighbors span { display: block; color: #b9b3cc; font-size: .85rem; }
+</style>

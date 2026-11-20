@@ -1,0 +1,237 @@
+---
+import Base from '../layouts/Base.astro';
+import HeroArt from '../components/HeroArt.astro';
+import Icon from '../components/Icon.astro';
+import { categories, guidePreview, listGuides, paths, statusLabels } from '../lib/content';
+
+const description = 'GTA 6 繁體中文攻略、任務、技巧與玩家工具。查找台灣玩家需要的上市平台、版本比較、新手資訊、人物地點與經查證的指南。';
+const guides = await listGuides();
+const spoilerFree = guides.filter(({ data }) => !data.spoiler);
+const recent = spoilerFree.slice(0, 3);
+const starterPicks = [
+  { id: 'editions', label: '購買前', title: '比較台灣販售版本', icon: 'news' },
+  { id: 'first-hour', label: '第一次遊玩', title: '調整字幕、按鍵與畫面', icon: 'guide' },
+  { id: 'faq', label: '有疑問時', title: '查繁中、離線和下載問題', icon: 'faq' },
+].filter(pick => spoilerFree.some(guide => guide.id === pick.id));
+const release = guides.find(({ id }) => id === 'release-platforms');
+const tags = [...new Set(guides.flatMap(({ data }) => data.tags))].sort((a, b) => a.localeCompare(b, 'zh-Hant-TW'));
+const icons: Record<string, string> = {
+  news: 'news', beginner: 'guide', missions: 'mission', money: 'money',
+  vehicles: 'car', map: 'map', collectibles: 'collect', faq: 'faq',
+};
+const statusText = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'G6 台灣攻略資料庫',
+  url: new URL(paths.home, Astro.site).href,
+  description,
+  inLanguage: 'zh-Hant-TW',
+};
+---
+<Base
+  title="GTA 6 繁體中文攻略、上市平台與新手指南｜G6 台灣攻略資料庫"
+  description={description}
+  structuredData={statusText}
+>
+  <div class="shell home">
+    <section class="hero" aria-labelledby="hero-title">
+      <HeroArt />
+      <div class="hero-content">
+        <p class="hero-kicker"><Icon name="guide" size={17} /> 台灣玩家攻略站</p>
+        <h1 id="hero-title">GTA 6<br /><span>繁體中文攻略</span></h1>
+        <p class="hero-description">GTA 6 繁體中文攻略、任務、技巧與玩家工具</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#guides" data-library-link><Icon name="search" size={19} /> 搜尋攻略</a>
+          {starterPicks.length > 0 && <a class="button button-secondary" href="#start"><Icon name="shield" size={18} /> 無劇透入口</a>}
+        </div>
+      </div>
+    </section>
+
+    {release && (
+      <aside class="release-strip" aria-label="GTA 6 上市資訊">
+        <div class="release-signal"><Icon name="news" size={18} /> 官方上市資訊</div>
+        <div class="release-facts"><time datetime="2026-11-19">2026/11/19</time><span>PS5 · Xbox Series X|S</span></div>
+        <a href={paths.article(release.id)}>查看查證與來源</a>
+      </aside>
+    )}
+
+    {starterPicks.length > 0 && (
+      <section class="home-section" id="start" aria-labelledby="start-title">
+        <div class="section-heading">
+          <div>
+            <h2 id="start-title">新手必讀</h2>
+            <p>先查版本和設定，安心開始遊玩。</p>
+          </div>
+          <span class="section-tag"><Icon name="shield" size={16} /> 無劇透</span>
+        </div>
+        <div class="starter-grid">
+          {starterPicks.map(({ id, label, title, icon }) => (
+            <a class="starter-card" href={paths.article(id)}>
+              <span class="topic-icon"><Icon name={icon} size={20} /></span>
+              <span><span class="starter-label">{label}</span><strong>{title}</strong></span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="home-section" id="topics" aria-labelledby="topics-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="topics-title">常用主題</h2>
+          <p>從你正在找的玩法、平台或遊戲問題開始。</p>
+        </div>
+      </div>
+      <div class="topic-grid">
+        {categories.map(({ id, label, description: topicDescription }) => {
+          const available = guides.some(({ data }) => data.category === id && !data.spoiler);
+          const hasSpoilers = guides.some(({ data }) => data.category === id && data.spoiler);
+          return (
+            <a class="topic-card" href={`${paths.home}?category=${id}#guides`} data-topic={id}>
+              <div class="topic-top">
+                <span class="topic-icon"><Icon name={icons[id]} size={21} /></span>
+                {!available && <span class="topic-status">{hasSpoilers ? '含劇透' : '內容整理中'}</span>}
+              </div>
+              <h3>{label}</h3>
+              <p>{topicDescription}</p>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="home-section guide-section" id="guides" aria-labelledby="guides-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="guides-title">攻略搜尋</h2>
+          <p>以關鍵字、分類或標籤找到已發表的文章。</p>
+        </div>
+      </div>
+      <nav class="player-library" data-player-library aria-label="我的攻略" hidden>
+        <strong>我的攻略</strong>
+        <a href={`${paths.home}?saved=1#guides`}>收藏 <span data-player-saved>0</span></a>
+        <a href={`${paths.home}?progress=read#guides`}>已讀 <span data-player-read>0</span></a>
+        <a href={`${paths.home}?progress=unread#guides`}>未讀 <span data-player-unread>0</span></a>
+      </nav>
+      <form class="search-panel" data-guide-search role="search" aria-label="攻略庫" action={`${paths.home}#guides`}>
+        <label class="search-field">
+          <span>搜尋攻略</span>
+          <span class="input-with-icon">
+            <Icon name="search" size={19} />
+            <input id="guide-query" name="q" type="search" placeholder="例如 PS5、版本、角色" autocomplete="off" />
+          </span>
+        </label>
+        <label class="filter-field">
+          <span>分類</span>
+          <span class="select-with-icon">
+            <select id="guide-category" name="category">
+              <option value="">所有分類</option>
+              {categories.map(({ id, label }) => <option value={id}>{label}</option>)}
+            </select>
+            <Icon name="chevron" size={16} />
+          </span>
+        </label>
+        <label class="filter-field">
+          <span>標籤</span>
+          <span class="select-with-icon">
+            <select id="guide-tag" name="tag">
+              <option value="">所有標籤</option>
+              {tags.map((tag) => <option value={tag}>{tag}</option>)}
+            </select>
+            <Icon name="chevron" size={16} />
+          </span>
+        </label>
+        <label class="filter-field progress-field">
+          <span>閱讀進度</span>
+          <span class="select-with-icon">
+            <select id="guide-progress" name="progress">
+              <option value="">所有進度</option>
+              <option value="read">已讀</option>
+              <option value="unread">未讀</option>
+            </select>
+            <Icon name="chevron" size={16} />
+          </span>
+        </label>
+        <div class="search-actions">
+          <button class="button button-secondary filter-saved" type="button" aria-pressed="false" data-saved-filter>
+            <Icon name="bookmark" size={18} /> 只看收藏
+          </button>
+          <button class="button button-secondary filter-safe" type="button" aria-pressed="false" data-spoiler-filter>
+            <Icon name="shield" size={18} /> 只看無劇透
+          </button>
+          <button class="button clear-filters" type="button" data-clear-filters hidden>清除搜尋條件</button>
+        </div>
+      </form>
+      <noscript><p class="plain-status">啟用 JavaScript 後可使用即時搜尋、收藏和防劇透切換。</p></noscript>
+      <div class="results-row">
+        <p class="plain-status" data-search-status role="status">共 {spoilerFree.length} 篇攻略</p>
+        <p class="plain-status" data-spoiler-count hidden></p>
+        <p class="plain-status" data-progress-count hidden></p>
+      </div>
+      <div class="empty-state" data-no-results hidden>
+        <Icon name="search" size={26} />
+        <strong>找不到符合條件的攻略</strong>
+        <p>可以縮短關鍵字、調整分類或查看其他主題。整理中的攻略會在查證後更新。</p>
+      </div>
+      <div class="guide-grid">
+        {guides.map((guide) => {
+          const { id, data } = guide;
+          return (
+            <article
+              class="guide-card"
+              data-guide-card
+              data-id={id}
+              data-category={data.category}
+              data-tags={JSON.stringify(data.tags)}
+              data-search={guidePreview(guide)}
+              data-spoiler={String(data.spoiler)}
+              hidden={data.spoiler}
+            >
+              <div class="card-top">
+                <div class="card-labels">
+                  <span class="badge" data-status={data.status}>{statusLabels[data.status]}</span>
+                  <span class="badge badge-muted">{data.level}</span>
+                  <span class="badge badge-read" data-guide-read hidden>已讀</span>
+                  {data.spoiler && <span class="badge" data-status="unconfirmed">含劇透</span>}
+                </div>
+                <button class="bookmark-button" type="button" data-save={id} aria-pressed="false" aria-label={`收藏 ${data.title}`} title="收藏攻略">
+                  <Icon name="bookmark" size={19} />
+                </button>
+              </div>
+              <h3><a href={paths.article(id)} data-highlight>{data.title}</a></h3>
+              <p data-highlight>{data.description}</p>
+              <p class="match-preview" data-match-preview hidden>
+                <strong>關鍵字片段</strong>
+                <span data-match-excerpt></span>
+              </p>
+              <div class="guide-bottom">
+                <span>{categories.find(({ id: categoryId }) => categoryId === data.category)?.label}</span>
+                <span>更新 <time datetime={data.updated}>{data.updated.replaceAll('-', '/')}</time></span>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    {recent.length > 0 && (
+      <section class="home-section updates-section" id="updates" aria-labelledby="updates-title">
+        <div class="section-heading">
+          <div>
+            <h2 id="updates-title">最新更新</h2>
+            <p>開啟文章即可查閱發布時間、更新日期與引用來源。</p>
+          </div>
+        </div>
+        <ul class="update-list">
+          {recent.map(({ id, data }) => (
+            <li>
+              <Icon name="update" size={18} />
+              <a href={paths.article(id)}>{data.title}</a>
+              <time datetime={data.updated}>{data.updated.replaceAll('-', '/')}</time>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </div>
+</Base>

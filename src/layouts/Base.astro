@@ -1,0 +1,106 @@
+---
+import Icon from '../components/Icon.astro';
+import { paths } from '../lib/content';
+import '../styles/site.css';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'article' | 'website';
+  noindex?: boolean;
+  structuredData?: unknown;
+}
+
+const {
+  title,
+  description,
+  image = paths.asset('og/g6-share.png'),
+  type = 'website',
+  noindex = false,
+  structuredData,
+} = Astro.props;
+const siteName = 'G6 台灣攻略資料庫';
+const pageTitle = title.includes(siteName) ? title : `${title}｜${siteName}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const sharingImage = new URL(image, canonical);
+const sourceData = structuredData === undefined ? undefined : JSON.stringify(structuredData).replaceAll('<', '\\u003c');
+const atHome = Astro.url.pathname === paths.home;
+---
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#10101a" />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    {!noindex && <link rel="canonical" href={canonical} />}
+    <link rel="icon" href={paths.asset('favicon.svg')} type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={siteName} href={paths.asset('rss.xml')} />
+    <meta property="og:type" content={type} />
+    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    {!noindex && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={sharingImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="G6 台灣攻略資料庫的原創霓虹城市插圖" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {sourceData && <script type="application/ld+json" is:inline set:html={sourceData} />}
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要內容</a>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href={paths.home} aria-current={atHome ? 'page' : undefined}>
+          <span class="brand-icon"><Icon name="brand" size={23} /></span>
+          <span><strong>G6</strong> 台灣攻略資料庫</span>
+        </a>
+        <nav class="top-nav" aria-label="主導覽">
+          <a href={paths.guides} data-library-link>攻略搜尋</a>
+          <a href={`${paths.home}#topics`}>主題分類</a>
+          <a href={`${paths.home}#updates`}>最新更新</a>
+        </nav>
+        <div class="site-actions">
+          <button type="button" class="header-control" data-spoiler-toggle aria-pressed="true">
+            <Icon name="shield" size={17} />
+            <span>防劇透</span>
+          </button>
+          <a class="header-control header-favorites" href={`${paths.home}?saved=1#guides`} aria-label="我的收藏" title="我的收藏">
+            <Icon name="bookmark" size={18} />
+            <span>收藏</span>
+          </a>
+        </div>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <slot />
+      <p class="shell plain-status" data-local-status role="status" hidden></p>
+    </main>
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <div>
+          <a class="brand footer-brand" href={paths.home}>
+            <span class="brand-icon"><Icon name="brand" size={20} /></span>
+            <span><strong>G6</strong> 台灣攻略資料庫</span>
+          </a>
+          <p>本站為非官方玩家資訊網站，與 Rockstar Games、Take-Two Interactive 無合作或授權關係。</p>
+        </div>
+        <nav aria-label="頁尾導覽" class="footer-links">
+          <a href={paths.guides}>攻略搜尋</a>
+          <a href={`${paths.home}#topics`}>主題分類</a>
+          <a href={paths.asset('rss.xml')}>RSS</a>
+          <a href="https://github.com/s235038/s235038-gta6-tw-guide"><Icon name="github" size={17} /> GitHub</a>
+        </nav>
+      </div>
+    </footer>
+    <script>
+      import '../scripts/site';
+    </script>
+  </body>
+</html>
