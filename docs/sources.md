@@ -15,6 +15,8 @@
 | 未標日期（更新於 2026-11-18） | 2026-11-20 | 高，官方客服 | 標準版、終極版、可加購升級、實體盒裝為下載碼 | [Rockstar 支援｜平台、版本與版次](https://support.rockstargames.com/articles/4QfG4FmZCf5W1gS8jy4UVT/grand-theft-auto-vi-platform-editions-and-versions) |
 | 未標日期（更新於 2026-11-18） | 2026-11-20 | 高，官方客服 | 按鍵、協助機能、字幕、介面與視角的設定分類 | [Rockstar 支援｜如何變更 GTA VI 設定](https://support.rockstargames.com/articles/4jUHNdP22SmaKSF8DWqhXC/how-to-change-grand-theft-auto-vi-settings) |
 | 未標日期（更新於 2026-11-03） | 2026-11-20 | 高，官方客服 | 安裝所需可用容量依裝置，最高 212 GB | [Rockstar 支援｜GTA VI 安裝需求](https://support.rockstargames.com/articles/M6h7B5fJZMwG1dnzQkt4Z/grand-theft-auto-vi-installation-requirements) |
+| 未標日期 | 2026-11-21 | 高，官方客服 | PS5 GTA VI 安裝問題的官方疑難排解入口 | [Rockstar 支援｜PS5 安裝問題](https://support.rockstargames.com/articles/7AuZkrnpnD2mCi1khnGRn6/issues-installing-grand-theft-auto-vi-on-playstation-5) |
+| 未標日期 | 2026-11-21 | 高，台灣官方支援 | GTA VI PS5 下載、無法啟動、系統更新及容量排查 | [PlayStation 台灣｜GTA VI 遊戲疑難排解](https://www.playstation.com/zh-hant-tw/support/games/gta-vi-game/) |
 | 未標日期 | 2026-11-20 | 高，發行商 | 傑森、露西亞及雷歐奈達州地點、人物介紹 | [Rockstar Games｜Only in Leonida](https://www.rockstargames.com/VI/only-in-leonida) |
 | 未標日期 | 2026-11-20 | 高，發行商 | 官方雷歐奈達地圖下載入口 | [Rockstar Games｜官方媒體頁](https://www.rockstargames.com/VI/media) |
 | 未標日期 | 2026-11-20 | 高，發行商 | 地區英文名稱 | [Rockstar Games｜官方場景圖集索引](https://www.rockstargames.com/VI/media/screenshots) |

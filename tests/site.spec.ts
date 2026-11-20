@@ -162,3 +162,18 @@ test('spoiler preferences persist and article spoilers can be revealed intention
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');
   await expect(body).toBeHidden();
 });
+
+
+test('PS5 install guide has a working route and source-backed troubleshooting', async ({ page }) => {
+  const route = `${base}guides/ps5-install-help/`;
+  const response = await page.goto(route);
+  expect(response?.status()).toBe(200);
+  await expect(page.locator('main h1')).toContainText('PS5');
+  await expect(page.locator('main article')).toContainText('下載');
+  await expect(page.locator('main article')).toContainText('暫停');
+  await expect(page.locator('main article')).toContainText('212 GB');
+  await expect(page.locator('#sources a[href="https://www.playstation.com/zh-hant-tw/support/games/gta-vi-game/"]')).toBeVisible();
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://s235038.github.io${route}`);
+  const size = await page.evaluate(() => ({ viewport: innerWidth, content: document.documentElement.scrollWidth }));
+  expect(size.content).toBeLessThanOrEqual(size.viewport + 1);
+});
