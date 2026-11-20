@@ -162,3 +162,16 @@ test('spoiler preferences persist and article spoilers can be revealed intention
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');
   await expect(body).toBeHidden();
 });
+
+
+test('source references open separately without navigating away from the guide', async ({ page }) => {
+  await page.goto(release);
+  const references = page.locator('#sources a');
+  expect(await references.count()).toBeGreaterThan(0);
+  for (const reference of await references.all()) {
+    await expect(reference).toHaveAttribute('target', '_blank');
+    await expect(reference).toHaveAttribute('rel', /noopener/);
+    await expect(reference).toHaveAttribute('aria-label', /另開新分頁/);
+  }
+  await expect(page.locator('.source-note')).toContainText('攻略重點已整理在本站');
+});
