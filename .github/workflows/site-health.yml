@@ -1,0 +1,63 @@
+name: G6 公開網站健康巡檢
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 08:17、14:17、20:17、02:17（台灣時間）
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  public-health:
+    name: 檢查首頁、文章、索引與分享圖片
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 驗證公開網址（不把未上線當成功）
+        env:
+          BASE_URL: https://s235038.github.io/s235038-gta6-tw-guide/
+        run: |
+          python3 - <<'PY'
+          import os
+          import sys
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError, URLError
+
+          base = os.environ["BASE_URL"]
+          paths = [
+              ("", "text/html", b"G6"),
+              ("guides/release-platforms/", "text/html", b"<html"),
+              ("guides/first-hour/", "text/html", b"<html"),
+              ("sitemap.xml", "xml", b"<"),
+              ("og/g6-share.png", "image/png", b""),
+          ]
+          failures = []
+          rows = []
+          for path, expected_type, marker in paths:
+              url = base + path
+              try:
+                  request = Request(url, headers={"User-Agent": "G6-TW-Guide-health-check/1.0"})
+                  with urlopen(request, timeout=15) as response:
+                      status = response.status
+                      content_type = response.headers.get("Content-Type", "")
+                      data = response.read(500_000)
+                  ok = status == 200 and expected_type in content_type and marker in data
+                  msg = f"{'OK' if ok else 'FAIL'}: {url} [HTTP {status}, {content_type}]"
+                  if not ok:
+                      failures.append(msg)
+              except (HTTPError, URLError, TimeoutError, OSError) as error:
+                  msg = f"FAIL: {url} [{error}]"
+                  failures.append(msg)
+              print(msg)
+              rows.append(msg)
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("## G6 公開站健康巡檢\n\n")
+              summary.write("\n".join(f"- {line}" for line in rows) + "\n")
+              if failures:
+                  summary.write("\n**未通過：請先查 Pages 設定與部署工作流程，再檢查網站程式。**\n")
+          if failures:
+              sys.exit(1)
+          PY
