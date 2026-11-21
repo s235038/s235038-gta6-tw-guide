@@ -4,7 +4,7 @@ description: "依台灣與英語媒體實機攻略交叉查證，整理 Pipework
 category: missions
 tags: ["第一章", "卡關", "家機", "任務", "Pipework", "曼蒂"]
 published: '2026-11-20'
-updated: '2026-11-20'
+updated: '2026-11-21'
 status: tested
 level: 第一章
 spoiler: true
@@ -16,9 +16,9 @@ sources:
     confidence: "高｜台灣媒體 PS5 實機"
     type: tested
   - title: "GamesRadar+｜Pipework 主線流程"
-    url: "https://www.gamesradar.com/games/grand-theft-auto/gta-6-chapter-1-walkthrough/8/"
-    published: '2026-11-19'
-    checked: '2026-11-20'
+    url: "https://www.gamesradar.com/games/grand-theft-auto/gta-6-chapter-1-walkthrough/7/"
+    published: '2026-11-20'
+    checked: '2026-11-21'
     confidence: "高｜媒體攻略與遊戲畫面"
     type: tested
   - title: "PowerPyx｜Pipework／Collect Mandy’s Rent"
