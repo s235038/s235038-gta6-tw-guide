@@ -130,11 +130,12 @@ const structuredData = {
         <div class="prose" data-reading-content><Content /></div>
         <section class="source-section" id="sources">
           <h2>查證來源</h2>
+          <p class="source-note">攻略重點已整理在本站。以下連結提供原始資料供進一步核對，點選會另開新分頁，方便回到本篇繼續閱讀。</p>
           <ul class="source-list">
             {data.sources.map(source => (
               <li>
                 <span class="badge" data-status={source.type}>{statusLabels[source.type]}</span>
-                <a href={source.url}>{source.title}</a>
+                <a href={source.url} target="_blank" rel="noopener noreferrer" aria-label={`${source.title}（另開新分頁）`}>{source.title} ↗</a>
                 <small>
                   <span>可信度 {source.confidence}</span>
                   <span>發布 {source.published ? <time datetime={source.published}>{dateLabel(source.published)}</time> : '未標示'}</span>
@@ -230,6 +231,7 @@ const structuredData = {
   .prose :global(td), .prose :global(th) { border: 1px solid #49435d; padding: .55rem; text-align: start; vertical-align: top; }
   .prose :global(th) { color: #fff3ff; background: #252139; }
   .source-section, .related-section { margin-top: 2rem; padding-top: .1rem; border-top: 1px solid #353348; }
+  .source-note { margin: .2rem 0 1rem; color: #c7c4d7; line-height: 1.7; }
   .source-list, .related-section ul, .article-tags { list-style: none; padding: 0; }
   .source-list li, .related-section li {
     padding: .8rem 0; border-bottom: 1px solid #353348; display: flex; align-items: baseline; flex-wrap: wrap; gap: .35rem .65rem; overflow-wrap: anywhere;

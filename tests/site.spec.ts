@@ -177,3 +177,16 @@ test('PS5 install guide has a working route and source-backed troubleshooting', 
   const size = await page.evaluate(() => ({ viewport: innerWidth, content: document.documentElement.scrollWidth }));
   expect(size.content).toBeLessThanOrEqual(size.viewport + 1);
 });
+
+
+test('source references open separately without navigating away from the guide', async ({ page }) => {
+  await page.goto(release);
+  const references = page.locator('#sources a');
+  expect(await references.count()).toBeGreaterThan(0);
+  for (const reference of await references.all()) {
+    await expect(reference).toHaveAttribute('target', '_blank');
+    await expect(reference).toHaveAttribute('rel', /noopener/);
+    await expect(reference).toHaveAttribute('aria-label', /另開新分頁/);
+  }
+  await expect(page.locator('.source-note')).toContainText('攻略重點已整理在本站');
+});
