@@ -190,3 +190,18 @@ test('source references open separately without navigating away from the guide',
   }
   await expect(page.locator('.source-note')).toContainText('攻略重點已整理在本站');
 });
+
+test('feedback entry explains public account requirements on home and article', async ({ page }) => {
+  for (const route of [base, release]) {
+    await page.goto(route);
+    const entry = page.getByRole('link', { name: '攻略回饋（GitHub，公開）' });
+    await entry.scrollIntoViewIfNeeded();
+    await expect(entry).toBeVisible();
+    await expect(entry).toHaveAttribute('href', 'https://github.com/s235038/s235038-gta6-tw-guide/issues/new?template=player-feedback.yml');
+    await expect(entry).toHaveAttribute('aria-describedby', 'feedback-notice');
+    await expect(page.locator('#feedback-notice')).toContainText('需 GitHub 帳號');
+    await expect(page.locator('#feedback-notice')).toContainText('會公開');
+    const size = await page.evaluate(() => ({ viewport: innerWidth, content: document.documentElement.scrollWidth }));
+    expect(size.content).toBeLessThanOrEqual(size.viewport + 1);
+  }
+});
