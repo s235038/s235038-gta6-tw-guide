@@ -1,0 +1,51 @@
+name: 攻略錯誤與玩家卡點
+description: 回報可重現的攻略或網站問題（需 GitHub 帳號，內容公開）
+title: "[玩家回饋] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        此回報會公開顯示 GitHub 帳號與填寫內容，並非匿名表單。
+        請勿填寫真名、聯絡方式、兌換碼、存檔或私人連結。不要上傳含帳號資訊的截圖。
+        玩家線索會先核對，送出不代表攻略已驗證或問題已修復。
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 回報類型
+      options:
+        - 攻略資訊錯誤
+        - 遊戲卡點或想看的攻略
+        - 網站搜尋、收藏或閱讀問題
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: 文章標題或本站公開網址
+  - type: input
+    id: platform
+    attributes:
+      label: 遊戲平台或瀏覽裝置
+      description: 例如 PS5、Xbox Series S、iPhone Safari；知道遊戲版本時可一併填寫。
+  - type: textarea
+    id: steps
+    attributes:
+      label: 發生情境與重現步驟
+      description: 寫出目前進度、操作順序、實際提示與預期結果；不確定的內容請註明。
+    validations:
+      required: true
+  - type: dropdown
+    id: spoiler
+    attributes:
+      label: 是否含劇透
+      options:
+        - 沒有
+        - 有
+        - 不確定
+    validations:
+      required: true
+  - type: input
+    id: evidence
+    attributes:
+      label: 可公開核對的來源（選填）
+      description: 官方說明或具名實機內容網址，請勿貼私人資料。
