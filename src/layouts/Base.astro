@@ -90,11 +90,13 @@ const atHome = Astro.url.pathname === paths.home;
             <span><strong>G6</strong> 台灣攻略資料庫</span>
           </a>
           <p>本站為非官方玩家資訊網站，與 Rockstar Games、Take-Two Interactive 無合作或授權關係。</p>
+          <p id="feedback-notice" data-feedback-notice>攻略回饋需 GitHub 帳號，內容與帳號名稱會公開；請勿填寫個資或上傳含私人資訊的截圖。</p>
         </div>
         <nav aria-label="頁尾導覽" class="footer-links">
           <a href={paths.guides}>攻略搜尋</a>
           <a href={`${paths.home}#topics`}>主題分類</a>
           <a href={paths.asset('rss.xml')}>RSS</a>
+          <a href="https://github.com/s235038/s235038-gta6-tw-guide/issues/new?template=player-feedback.yml" aria-describedby="feedback-notice">攻略回饋（GitHub，公開）</a>
           <a href="https://github.com/s235038/s235038-gta6-tw-guide"><Icon name="github" size={17} /> GitHub</a>
         </nav>
       </div>
